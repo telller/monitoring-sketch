@@ -59,6 +59,9 @@ void loop () {
   DateTime now = rtc.now();
   int Minutes = now.minute();
 
+//  Serial.println("Minutes: ");
+//  Serial.println(Minutes);
+
   // main logic to send data to server (in 0/15/30/45 minutes of each hour)
   if (Minutes == 0 || Minutes == 15 || Minutes == 30 || Minutes == 45) {
     if (Minutes != lastMinutes) {
