@@ -81,6 +81,7 @@ void loop () {
         obj["humidity"] = hdc1080.readHumidity();
         obj["carbonDioxide"] = ccs811.getCO2();
         obj["volatileOrganicCompounds"] = ccs811.getTVOC();
+        obj["dateTime"] = now.timestamp(DateTime::TIMESTAMP_FULL);
 
         // convert data to json
         String requestBody;
