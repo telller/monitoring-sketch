@@ -78,9 +78,13 @@ void loop () {
         // collect data
         StaticJsonDocument<200> obj;
         obj["temperature"] = hdc1080.readTemperature();
+        delay(20);
         obj["humidity"] = hdc1080.readHumidity();
+        delay(20);
         obj["carbonDioxide"] = ccs811.getCO2();
+        delay(20);
         obj["volatileOrganicCompounds"] = ccs811.getTVOC();
+        delay(20);
         obj["dateTime"] = now.timestamp(DateTime::TIMESTAMP_FULL);
 
         // convert data to json
