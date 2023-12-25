@@ -13,7 +13,7 @@ RTC_DS3231 rtc; // rtc
 
 String ssid = "J.Teller"; // wifi ssid
 String password = "j.tellller"; // wifi pass
-String server_url = "http://192.168.50.6/status"; // send data endpoint
+String server_url = "http://185.249.161.91/status"; // send data endpoint
 
 int lastMinutes = 0;
 
@@ -58,8 +58,8 @@ void loop () {
   int Minutes = now.minute();
 
   // main logic to send data to server (in 0/15/30/45 minutes of each hour)
-  // if (Minutes == 0 || Minutes == 15 || Minutes == 30 || Minutes == 45) {
-    // if (Minutes != lastMinutes) {
+  if (Minutes == 0 || Minutes == 15 || Minutes == 30 || Minutes == 45) {
+    if (Minutes != lastMinutes) {
       if(WiFi.status() == WL_CONNECTED) {
         WiFiClient client;
         HTTPClient http;
@@ -84,7 +84,7 @@ void loop () {
         http.POST(requestBody);
         http.end();
       }
-      // lastMinutes = Minutes;
-    // }    
-  // }
+      lastMinutes = Minutes;
+    }    
+  }
 }
