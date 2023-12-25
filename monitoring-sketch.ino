@@ -1,6 +1,5 @@
 #include "ClosedCube_HDC1080.h"
 #include <ESP8266HTTPClient.h>
-#include "SparkFunCCS811.h"
 #include <ArduinoJson.h>
 #include <ESP8266WiFi.h>
 #include <ArduinoOTA.h>
@@ -9,28 +8,27 @@
 #include "RTClib.h" 
 #include "Wire.h"
 
-ClosedCube_HDC1080 hdc1080; // air
-CCS811 ccs811(0x5A); // temp
+ClosedCube_HDC1080 hdc1080; // temp
 RTC_DS3231 rtc; // rtc
 
-char* ssid = "J.Teller"; // wifi ssid
-char* password = "j.tellller"; // wifi pass
-char* server_url = "http://192.168.50.6/status"; // send data endpoint
+String ssid = "J.Teller"; // wifi ssid
+String password = "j.tellller"; // wifi pass
+String server_url = "http://192.168.50.6/status"; // send data endpoint
 
 int lastMinutes = 0;
 
 void setup () {
-//  Serial.begin(57600); // uncomment for debug
   pinMode(2, OUTPUT); // led isWorking
+
+  // Serial.begin(9600); // uncomment for debug
   Wire.begin(4, 5); // init I2C
-  
+
   hdc1080.begin(0x40); // init temp
-  ccs811.begin(); // init air
   rtc.begin(); // init rtc
   
 //  if (rtc.lostPower()) {
-//    // rtc, set time if unset
-//    rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
+    // rtc, set time if unset
+    //  rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
 //  }
 
   // connect to wifi
@@ -59,15 +57,10 @@ void loop () {
   DateTime now = rtc.now();
   int Minutes = now.minute();
 
-//  Serial.println("Minutes: ");
-//  Serial.println(Minutes);
-
   // main logic to send data to server (in 0/15/30/45 minutes of each hour)
-  if (Minutes == 0 || Minutes == 15 || Minutes == 30 || Minutes == 45) {
-    if (Minutes != lastMinutes) {
+  // if (Minutes == 0 || Minutes == 15 || Minutes == 30 || Minutes == 45) {
+    // if (Minutes != lastMinutes) {
       if(WiFi.status() == WL_CONNECTED) {
-        // init vars
-        ccs811.readAlgorithmResults();
         WiFiClient client;
         HTTPClient http;
 
@@ -81,11 +74,7 @@ void loop () {
         delay(20);
         obj["humidity"] = hdc1080.readHumidity();
         delay(20);
-        obj["carbonDioxide"] = ccs811.getCO2();
-        delay(20);
-        obj["volatileOrganicCompounds"] = ccs811.getTVOC();
-        delay(20);
-        obj["dateTime"] = now.timestamp(DateTime::TIMESTAMP_FULL);
+        obj["timestamp_board"] = now.timestamp(DateTime::TIMESTAMP_FULL);
 
         // convert data to json
         String requestBody;
@@ -95,8 +84,7 @@ void loop () {
         http.POST(requestBody);
         http.end();
       }
-      
-      lastMinutes = Minutes;
-    }    
-  }
+      // lastMinutes = Minutes;
+    // }    
+  // }
 }
